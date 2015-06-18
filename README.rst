@@ -85,3 +85,26 @@ You can also include Handlebars templates with a Django template tag::
     {% include_handlebars "handlebars_template_name.html" %}
 
 The current template context will be carried over into the Handlebars template.
+
+
+Precompilation
+--------------
+
+You can leverage precompilation supported by pybars 0.9+ by:
+
+1. Add a ``HANDLEBARS_OPTS`` value to your settings module, with a key of ``module_directory``
+   which is an absolute path to where precompiled templates will be written and read from.
+   If ``module_directory`` is set, but ``precompile`` is False, then the templates will
+   not be precompiled but if there are existing precompiled templates in
+   the ``module_directory``, then they will be used.::
+
+       import os
+       import tempfile
+
+       HANDLEBARS_OPTS = {
+          'precompile': True,
+          'module_directory': os.path.join(
+               tempfile.gettempdir(),
+               'djangobars_template_cache')
+       }
+

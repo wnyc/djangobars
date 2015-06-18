@@ -5,6 +5,7 @@ from django.template.loader import (find_template_loader, BaseLoader,
 
 from .. import settings
 from .base import HandlebarsTemplate
+from .backends import Handlebars as HandlebarsEngine
 
 
 template_source_loaders = None
@@ -17,13 +18,23 @@ class BaseHandlebarsLoader(BaseLoader):
     module instead of the one in the core Django template codebase.
     """
 
+    def __init__(self, *args, **kwargs):
+        self.engine_options = getattr(settings, 'HANDLEBARS_OPTS', {})
+        self.engine = HandlebarsEngine({'OPTIONS': self.engine_options})
+        return super(BaseLoader, self).__init__(*args, **kwargs)
+
+
     def load_template(self, template_name, template_dirs=None):
+        template = self.engine.get_template(template_name, dirs=self)
+        if template:
+            return template, None
+
         source, display_name = self.load_template_source(template_name,
                                                          template_dirs)
         origin = make_origin(display_name, self.load_template_source,
                              template_name, template_dirs)
         try:
-            template = get_template_from_string(source, origin, template_name)
+            template = self.engine.from_string(source, origin=origin, name=template_name)
             return template, None
         except TemplateDoesNotExist:
             # If compiling the template we found raises TemplateDoesNotExist,
@@ -31,6 +42,14 @@ class BaseHandlebarsLoader(BaseLoader):
             # we were asked to load. This allows for correct identification
             # (later) of the actual template that does not exist.
             return source, display_name
+
+
+def reset_loaders():
+    """
+    For testing, reset cached loaders
+    """
+    global template_source_loaders
+    template_source_loaders = None
 
 
 def find_template(name, dirs=None):

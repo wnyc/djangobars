@@ -15,3 +15,7 @@ if hasattr(settings, 'HANDLEBARS_APP_DIRNAMES'):
 
 if hasattr(settings, 'INSTALLED_APPS'):
     INSTALLED_APPS = settings.INSTALLED_APPS
+
+# This is a backwards-compatible way to get OPTIONS previous to Django 1.8
+if hasattr(settings, 'HANDLEBARS_OPTS'):
+    HANDLEBARS_OPTS = settings.HANDLEBARS_OPTS
