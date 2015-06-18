@@ -85,3 +85,24 @@ You can also include Handlebars templates with a Django template tag::
     {% include_handlebars "handlebars_template_name.html" %}
 
 The current template context will be carried over into the Handlebars template.
+
+
+Helpers
+-------
+
+Included in Djangobars is a `url` helper, so you can do::
+
+    {{url some-url-pattern id}}
+
+and it will be run through Django's resolve() method.
+
+You can also register your own helpers with:
+
+    from djangobars.template.helpers import register_tag
+
+    def some_foo_tag(context, *args):
+        return 'foo'
+
+    register_tag('foo', some_foo_tag)
+
+which will then allow you to use `{{foo ...}}` in your templates.

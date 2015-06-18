@@ -11,3 +11,6 @@ _djangobars_ = {
         'url': _url
     }
 }
+
+def register_tag(name, filter_func):
+    _djangobars_['helpers'][name] = filter_func
